@@ -5,40 +5,335 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Cookie Clicker</title>
     <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
         body {
             font-family: Arial, sans-serif;
-            text-align: center;
-            background-color: #f8f8f8;
-            margin: 0;
-            padding: 50px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
         }
-        #cookie {
+
+        .container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            max-width: 1000px;
+            width: 100%;
+        }
+
+        .game-section {
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .stats {
+            text-align: center;
+            margin-bottom: 30px;
+            width: 100%;
+        }
+
+        .stat-item {
+            margin: 15px 0;
+            font-size: 18px;
+        }
+
+        .stat-label {
+            color: #667eea;
+            font-weight: bold;
+        }
+
+        .stat-value {
+            font-size: 28px;
+            color: #764ba2;
+            font-weight: bold;
+        }
+
+        .cookie-button {
             width: 200px;
             height: 200px;
-            background-image: url('https://www.example.com/cookie.png');
-            background-size: cover;
-            cursor: pointer;
-            margin: auto;
-        }
-        #counter {
+            border-radius: 50%;
+            background: linear-gradient(145deg, #FFD700, #FFA500);
+            border: 5px solid #FF8C00;
             font-size: 24px;
-            margin-top: 20px;
+            cursor: pointer;
+            transition: all 0.1s;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            margin-bottom: 30px;
+        }
+
+        .cookie-button:hover {
+            transform: scale(1.05);
+            box-shadow: 0 12px 30px rgba(0, 0, 0, 0.3);
+        }
+
+        .cookie-button:active {
+            transform: scale(0.95);
+        }
+
+        .shop {
+            width: 100%;
+        }
+
+        .shop-title {
+            font-size: 22px;
+            font-weight: bold;
+            color: #667eea;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .upgrades-list {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .upgrade-item {
+            background: #f5f5f5;
+            padding: 15px;
+            border-radius: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-left: 5px solid #667eea;
+            transition: all 0.3s;
+        }
+
+        .upgrade-item:hover {
+            background: #efefef;
+            transform: translateX(5px);
+        }
+
+        .upgrade-item.purchased {
+            background: #e8f5e9;
+            border-left-color: #4caf50;
+        }
+
+        .upgrade-info h3 {
+            color: #333;
+            font-size: 16px;
+            margin-bottom: 5px;
+        }
+
+        .upgrade-info p {
+            color: #666;
+            font-size: 13px;
+        }
+
+        .upgrade-cost {
+            background: #667eea;
+            color: white;
+            padding: 8px 15px;
+            border-radius: 8px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+            border: none;
+            min-width: 80px;
+            text-align: center;
+        }
+
+        .upgrade-cost:hover:not(:disabled) {
+            background: #764ba2;
+            transform: scale(1.1);
+        }
+
+        .upgrade-cost:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+            opacity: 0.6;
+        }
+
+        .quantity {
+            background: #667eea;
+            color: white;
+            min-width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            font-weight: bold;
+            margin-left: 10px;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                grid-template-columns: 1fr;
+            }
+
+            .cookie-button {
+                width: 150px;
+                height: 150px;
+                font-size: 18px;
+            }
         }
     </style>
 </head>
 <body>
-    <h1>Cookie Clicker Game</h1>
-    <div id="cookie"></div>
-    <div id="counter">Cookies: 0</div>
-    <script>
-        let cookies = 0;
-        const cookieElement = document.getElementById('cookie');
-        const counterElement = document.getElementById('counter');
+    <div class="container">
+        <div class="game-section">
+            <div class="stats">
+                <div class="stat-item">
+                    <span class="stat-label">Cookies:</span>
+                    <div class="stat-value" id="cookieCount">0</div>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-label">Cookies Per Second:</span>
+                    <div class="stat-value" id="cpsDisplay">0</div>
+                </div>
+            </div>
+            <button class="cookie-button" id="cookieBtn">🍪</button>
+            <button id="resetBtn" style="padding: 10px 20px; background: #ff6b6b; color: white; border: none; border-radius: 8px; cursor: pointer; font-size: 14px;">Reset Game</button>
+        </div>
 
-        cookieElement.addEventListener('click', () => {
-            cookies++;
-            counterElement.textContent = `Cookies: ${cookies}`;
+        <div class="game-section">
+            <div class="shop-title">🏪 Shop</div>
+            <div class="upgrades-list" id="upgradesList"></div>
+        </div>
+    </div>
+
+    <script>
+        // Game State
+        let cookies = 0;
+        let cookiesPerSecond = 0;
+        let upgrades = [
+            { id: 1, name: 'Grandma', description: '+1 cookie per second', cost: 15, cps: 1, quantity: 0 },
+            { id: 2, name: 'Farm', description: '+5 cookies per second', cost: 100, cps: 5, quantity: 0 },
+            { id: 3, name: 'Factory', description: '+25 cookies per second', cost: 500, cps: 25, quantity: 0 },
+            { id: 4, name: 'Bank', description: '+100 cookies per second', cost: 2000, cps: 100, quantity: 0 },
+            { id: 5, name: 'Wizard Tower', description: '+500 cookies per second', cost: 10000, cps: 500, quantity: 0 },
+            { id: 6, name: 'Spaceship', description: '+2000 cookies per second', cost: 50000, cps: 2000, quantity: 0 }
+        ];
+
+        // DOM Elements
+        const cookieBtn = document.getElementById('cookieBtn');
+        const cookieCountDisplay = document.getElementById('cookieCount');
+        const cpsDisplay = document.getElementById('cpsDisplay');
+        const upgradesList = document.getElementById('upgradesList');
+        const resetBtn = document.getElementById('resetBtn');
+
+        // Load game from localStorage
+        function loadGame() {
+            const saved = localStorage.getItem('cookieClickerGame');
+            if (saved) {
+                const data = JSON.parse(saved);
+                cookies = data.cookies;
+                upgrades = data.upgrades;
+                updateCPS();
+            }
+        }
+
+        // Save game to localStorage
+        function saveGame() {
+            localStorage.setItem('cookieClickerGame', JSON.stringify({ cookies, upgrades }));
+        }
+
+        // Update cookies per second
+        function updateCPS() {
+            cookiesPerSecond = upgrades.reduce((total, upgrade) => total + (upgrade.cps * upgrade.quantity), 0);
+        }
+
+        // Update display
+        function updateDisplay() {
+            cookieCountDisplay.textContent = formatNumber(cookies);
+            cpsDisplay.textContent = formatNumber(cookiesPerSecond);
+            renderUpgrades();
+            saveGame();
+        }
+
+        // Format large numbers
+        function formatNumber(num) {
+            if (num >= 1000000) return (num / 1000000).toFixed(2) + 'M';
+            if (num >= 1000) return (num / 1000).toFixed(2) + 'K';
+            return Math.floor(num).toString();
+        }
+
+        // Click cookie
+        cookieBtn.addEventListener('click', () => {
+            cookies += 1;
+            updateDisplay();
         });
+
+        // Render upgrades
+        function renderUpgrades() {
+            upgradesList.innerHTML = '';
+            upgrades.forEach(upgrade => {
+                const div = document.createElement('div');
+                div.className = 'upgrade-item' + (upgrade.quantity > 0 ? ' purchased' : '');
+                const canAfford = cookies >= upgrade.cost;
+                
+                div.innerHTML = `
+                    <div class="upgrade-info">
+                        <h3>${upgrade.name}</h3>
+                        <p>${upgrade.description}</p>
+                    </div>
+                    <div style="display: flex; align-items: center; gap: 10px;">
+                        ${upgrade.quantity > 0 ? `<div class="quantity">${upgrade.quantity}</div>` : ''}
+                        <button class="upgrade-cost" onclick="buyUpgrade(${upgrade.id})" ${!canAfford ? 'disabled' : ''}>
+                            ${formatNumber(upgrade.cost)}
+                        </button>
+                    </div>
+                `;
+                upgradesList.appendChild(div);
+            });
+        }
+
+        // Buy upgrade
+        window.buyUpgrade = function(upgradeId) {
+            const upgrade = upgrades.find(u => u.id === upgradeId);
+            if (cookies >= upgrade.cost) {
+                cookies -= upgrade.cost;
+                upgrade.quantity++;
+                upgrade.cost = Math.ceil(upgrade.cost * 1.15);
+                updateCPS();
+                updateDisplay();
+            }
+        };
+
+        // Reset game
+        resetBtn.addEventListener('click', () => {
+            if (confirm('Are you sure you want to reset your game?')) {
+                cookies = 0;
+                upgrades.forEach(u => {
+                    u.quantity = 0;
+                    u.cost = [15, 100, 500, 2000, 10000, 50000][u.id - 1];
+                });
+                updateCPS();
+                updateDisplay();
+                saveGame();
+            }
+        });
+
+        // Auto-clicker (passive income)
+        setInterval(() => {
+            if (cookiesPerSecond > 0) {
+                cookies += cookiesPerSecond / 10;
+                updateDisplay();
+            }
+        }, 100);
+
+        // Initial load
+        loadGame();
+        updateDisplay();
     </script>
 </body>
 </html>
