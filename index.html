@@ -3,50 +3,42 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Motorcycle Game</title>
+    <title>Cookie Clicker</title>
     <style>
-        body { margin: 0; overflow: hidden; }
-        canvas { background: #eee; display: block; margin: auto; }
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            background-color: #f8f8f8;
+            margin: 0;
+            padding: 50px;
+        }
+        #cookie {
+            width: 200px;
+            height: 200px;
+            background-image: url('https://www.example.com/cookie.png');
+            background-size: cover;
+            cursor: pointer;
+            margin: auto;
+        }
+        #counter {
+            font-size: 24px;
+            margin-top: 20px;
+        }
     </style>
 </head>
 <body>
-    <canvas id="gameCanvas" width="800" height="600"></canvas>
+    <h1>Cookie Clicker Game</h1>
+    <div id="cookie"></div>
+    <div id="counter">Cookies: 0</div>
     <script>
-        const canvas = document.getElementById('gameCanvas');
-        const ctx = canvas.getContext('2d');
-        let score = 0;
-        let player = {x: 50, y: 250, width: 50, height: 30, speed: 5};
+        let cookies = 0;
+        const cookieElement = document.getElementById('cookie');
+        const counterElement = document.getElementById('counter');
 
-        document.addEventListener('keydown', (e) => {
-            if (e.key === 'ArrowUp') player.y -= player.speed;
-            if (e.key === 'ArrowDown') player.y += player.speed;
+        cookieElement.addEventListener('click', () => {
+            cookies++;
+            counterElement.textContent = `Cookies: ${cookies}`;
         });
-
-        function drawPlayer() {
-            ctx.fillStyle = 'blue';
-            ctx.fillRect(player.x, player.y, player.width, player.height);
-        }
-
-        function drawObstacles() {
-            ctx.fillStyle = 'red';
-            ctx.fillRect(300, 200, 50, 10); // Example obstacle
-        }
-
-        function updateScore() {
-            score++;
-            ctx.fillStyle = 'black';
-            ctx.fillText('Score: ' + score, 10, 20);
-        }
-
-        function gameLoop() {
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-            drawPlayer();
-            drawObstacles();
-            updateScore();
-            requestAnimationFrame(gameLoop);
-        }
-
-        gameLoop();
     </script>
 </body>
 </html>
